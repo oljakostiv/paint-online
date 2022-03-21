@@ -1,16 +1,15 @@
 import React from "react";
 import './styles/app.scss';
-import ToolBar from "./components/ToolBar";
-import SettingBar from "./components/SettingBar";
-import Canvas from "./components/Canvas";
+import {BrowserRouter} from "react-router-dom";
+import AppRouter from "./routes";
 
 function App() {
   return (
-    <div className='app'>
-      <ToolBar/>
-      <SettingBar/>
-      <Canvas/>
-    </div>
+    <BrowserRouter>
+      <div className='app'>
+       <AppRouter/>
+      </div>
+    </BrowserRouter>
   );
 }
 

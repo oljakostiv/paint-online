@@ -2,9 +2,9 @@ import {makeAutoObservable} from "mobx";
 
 class CanvasState {
   canvas = null;
-
   undoList = [];
   redoList = [];
+  userName = '';
 
   constructor() {
     makeAutoObservable(this);
@@ -53,8 +53,12 @@ class CanvasState {
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         context.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
       };
-    };
-  }
+    }
+  };
+
+  setUserName(userName) {
+    this.userName = userName;
+  };
 }
 
 export default new CanvasState();
