@@ -1,0 +1,14 @@
+@import "./index";
+
+.canvas {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+//for element:
+canvas {
+  border: 2px solid #283642;
+  background-color: #ffffff;
+}
