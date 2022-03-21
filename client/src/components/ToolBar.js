@@ -1,12 +1,12 @@
 import React from 'react';
 import '../styles/bar.scss';
 import toolState from "../store/toolState";
+import canvasState from "../store/canvasState";
 import Brush from "../tools/brush";
 import Rect from "../tools/rect";
 import Circle from "../tools/circle";
 import Line from "../tools/line";
 import Eraser from "../tools/eraser";
-import canvasState from "../store/canvasState";
 
 const ToolBar = () => {
    const onChangeColor = e => {
@@ -41,8 +41,14 @@ const ToolBar = () => {
         onChange={e => {onChangeColor(e)}}
         type="color"
       />
-      <button className='bar__btn undo'/>
-      <button className='bar__btn redo'/>
+      <button
+        className='bar__btn undo'
+        onClick={() => {canvasState.undo()}}
+      />
+      <button
+        className='bar__btn redo'
+        onClick={() => {canvasState.redo()}}
+      />
       <button className='bar__btn save'/>
     </div>
   );
