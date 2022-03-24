@@ -12,13 +12,24 @@ const ToolBar = () => {
    const onChangeColor = e => {
        toolState.setFillColor(e.target.value);
        toolState.setStrokeColor(e.target.value);
-    }
+    };
+
+   const savePicture = () => {
+     const data = canvasState.canvas.toDataURL();  //отримуєм поточе;
+     const a = document.createElement('a'); //створ силку;
+     a.href = data;
+     a.download = canvasState.sessionId + '.jpg';   //creat name;
+     document.body.appendChild(a);  //add href;
+     a.click();
+     document.body.removeChild(a);
+   };
 
   return (
     <div className='bar z-index'>
       <button
         className='bar__btn brush'
-        onClick={() => toolState.setTool(new Brush(canvasState.canvas))}
+        onClick={() =>
+          toolState.setTool(new Brush(canvasState.canvas, canvasState.sessionId, canvasState.socket))}
       />
       <button
         className='bar__btn circle'
@@ -26,7 +37,8 @@ const ToolBar = () => {
       />
       <button
         className='bar__btn rect'
-        onClick={() => toolState.setTool(new Rect(canvasState.canvas))}
+        onClick={() =>
+          toolState.setTool(new Rect(canvasState.canvas, canvasState.sessionId, canvasState.socket))}
       />
       <button
         className='bar__btn line'
@@ -49,7 +61,10 @@ const ToolBar = () => {
         className='bar__btn redo'
         onClick={() => {canvasState.redo()}}
       />
-      <button className='bar__btn save'/>
+      <button
+        className='bar__btn save'
+        onClick={() => {savePicture()}}
+      />
     </div>
   );
 };

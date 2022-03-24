@@ -1,8 +1,13 @@
 ## Available Script:
 
-In the project directory, you can run:
+**Client: (the client directory)**
+### `npm run start`
+Open [http://localhost:3000](http://localhost:3000) to view
+it in the browser.
 
-### `npm start`
+**Backend:**
+### `npm run dev`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+________________
+
+[LinkedIn](https://www.linkedin.com/in/olha-kostiv-84918421a/)

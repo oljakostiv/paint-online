@@ -6,6 +6,8 @@ import toolState from "../store/toolState";
 import Brush from "../tools/brush";
 import {Button, Form, Modal} from "react-bootstrap";
 import {useParams} from "react-router-dom";
+import Rect from "../tools/rect";
+import axios from "axios";
 
 const Canvas = observer(() => {
   const canvasRef = useRef();
@@ -15,12 +17,28 @@ const Canvas = observer(() => {
 
   useEffect(() => {
     canvasState.setCanvas(canvasRef.current);
-    toolState.setTool(new Brush(canvasRef.current));
+
+    //отримання поточної картинки сесії:
+    let context = canvasRef.current.getContext('2d');
+    axios.get(`http://localhost:5000/image?id=${params.id}`)
+      .then(response => {
+        const img = new Image();
+        img.src = response.data;
+
+        img.onload = () => {
+          context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          context.drawImage(img, 0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+      });
   }, []);
 
   useEffect(() => {
     if (canvasState.userName) {
       const socket = new WebSocket('ws://localhost:5000/');
+
+      canvasState.setSocket(socket);
+      canvasState.setSessionId(params.id);
+      toolState.setTool(new Brush(canvasRef.current, params.id, socket));
 
       socket.onopen = () => {
         socket.send(JSON.stringify({
@@ -31,18 +49,50 @@ const Canvas = observer(() => {
       };
 
       socket.onmessage = (ev) => {
-        console.log(ev.data);
-      }
+        let mess = JSON.parse(ev.data);
+        switch (mess.method) {
+          case 'connection':
+            console.log(`${mess.username} connected`);
+            break;
+
+          case 'draw':
+            drawHandler(mess);
+            break;
+        }
+      };
     }
   }, [canvasState.userName]);
 
   const mouseDownHandler = () => {
     canvasState.pushToUndo(canvasRef.current.toDataURL());  //screen;
+
+    //для зберігання поточного значення по силці:
+    axios.post(`http://localhost:5000/image?id=${params.id}`, {img: canvasRef.current.toDataURL()})
+      .then(response => console.log(response.data));
   };
 
   const connectHandler = () => {
     canvasState.setUserName(userNameRef.current.value);
     setModal(false);
+  };
+
+  const drawHandler = (mess) => {
+    const element = mess.element;
+    const context = canvasRef.current.getContext('2d'); //щоб малювати;
+
+    switch (element.type) {
+      case 'brush':
+        Brush.draw(context, element.x, element.y);
+        break;
+
+      case 'rect':
+        Rect.staticDraw(context, element.x, element.y, element.w, element.h, element.color);
+        break;
+
+      case 'newPath':
+        context.beginPath() //новий елемент малюнка;
+        break;
+    }
   };
 
   return (
@@ -69,7 +119,9 @@ const Canvas = observer(() => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant={"outline-success"}
-                  onClick={() => {connectHandler()}}
+                  onClick={() => {
+                    connectHandler()
+                  }}
           >
             Submit
           </Button>

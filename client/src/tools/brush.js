@@ -1,8 +1,8 @@
 import Tool from './tools';
 
 export default class Brush extends Tool {
-  constructor(canvas) {
-    super(canvas);
+  constructor(canvas, id, socket) {
+    super(canvas, id, socket);
     this.listen();  //одразу слухає всі ф-іх миші;
   };
 
@@ -20,16 +20,35 @@ export default class Brush extends Tool {
 
   mouseMoveHandler(e) {
     if (this.mouseDown) {
-      this.draw(e.pageX - e.target.offsetLeft, e.pageY - e.target.offsetTop);
+      // this.draw(e.pageX - e.target.offsetLeft, e.pageY - e.target.offsetTop);
+      //щоб інші учвсники бачили, що малюється:
+      this.socket.send(JSON.stringify({
+        method: 'draw',
+        id: this.id,
+        element: {
+          type: 'brush',  //for switch case in canvas comp;
+          x: e.pageX - e.target.offsetLeft,
+          y: e.pageY - e.target.offsetTop
+        }
+      }));
     }
   };
 
-  mouseUpHandler(e) {
+  mouseUpHandler() {
     this.mouseDown = false;
+
+    //щоб лінія переривалась у всіх користувачів:
+    this.socket.send(JSON.stringify({
+      method: 'draw',
+      id: this.id,
+      element: {
+        type: 'newPath'
+      }
+    }));
   };
 
-  draw(x, y) {
-    this.context.lineTo(x, y);  //створ. лінія;
-    this.context.stroke();  //щоб мала колір;
+  static draw(context, x, y) { //щоб далі вик не створ екземпляр класа;
+    context.lineTo(x, y);  //створ. лінія;
+    context.stroke();  //щоб мала колір;
   };
 }

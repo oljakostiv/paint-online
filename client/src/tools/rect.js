@@ -1,8 +1,8 @@
 import Tool from './tools';
 
 export default class Rect extends Tool {
-  constructor(canvas) {
-    super(canvas);
+  constructor(canvas,  id, socket) {
+    super(canvas, id, socket);
     this.listen();
   };
 
@@ -24,19 +24,35 @@ export default class Rect extends Tool {
     if (this.mouseDown) {
       let currentX = e.pageX - e.target.offsetLeft;
       let currentY = e.pageY - e.target.offsetTop;
-      let width = currentX - this.startX;
-      let height = currentY - this.startY;
-      this.draw(this.startX, this.startY, width, height);
+      this.width = currentX - this.startX;
+      this.height = currentY - this.startY;
+      this.draw(this.startX, this.startY, this.width, this.height);
     }
   };
 
-  mouseUpHandler(e) {
+  mouseUpHandler() {
     this.mouseDown = false;
+
+    //відображення для учасників коли вже намалювався квадрат:
+    this.socket.send(JSON.stringify({
+      method: 'draw',
+      id: this.id,
+      element: {
+        type: 'rect',
+        x: this.startX,
+        y: this.startY,
+        w: this.width,
+        h: this.height,
+        color: this.context.fillStyle
+      }
+    }));
   };
 
+  //for creator:
   draw(x, y, w, h) {
     const img = new Image();
     img.src = this.saved;
+
     //щоб бачити тільки поточе зображення фігури:
     img.onload = () => {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -46,5 +62,14 @@ export default class Rect extends Tool {
       this.context.fill();  //колір всередині;
       this.context.stroke();  //колір контуру;
     }
+  };
+
+  //for partner:
+  static staticDraw(context, x, y, w, h, color) {
+    context.beginPath();
+    context.rect(x, y, w, h);
+    context.fillStyle = color;
+    context.fill();
+    context.stroke();
   };
 }
