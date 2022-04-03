@@ -1,13 +1,14 @@
+import axios from "axios";
 import React, {useEffect, useRef, useState} from 'react';
-import '../styles/canvas.scss';
+import {Button, Form, Modal} from "react-bootstrap";
+import {useParams} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import canvasState from '../store/canvasState';
 import toolState from "../store/toolState";
 import Brush from "../tools/brush";
-import {Button, Form, Modal} from "react-bootstrap";
-import {useParams} from "react-router-dom";
 import Rect from "../tools/rect";
-import axios from "axios";
+import '../styles/canvas.scss';
+import Circle from "../tools/circle";
 
 const Canvas = observer(() => {
   const canvasRef = useRef();
@@ -58,6 +59,9 @@ const Canvas = observer(() => {
           case 'draw':
             drawHandler(mess);
             break;
+
+          default:
+            console.log('default');
         }
       };
     }
@@ -89,9 +93,16 @@ const Canvas = observer(() => {
         Rect.staticDraw(context, element.x, element.y, element.w, element.h, element.color);
         break;
 
+      case 'circle':
+        Circle.staticDraw(context, element.x, element.y, element.radius, element.color);
+        break;
+
       case 'newPath':
         context.beginPath() //новий елемент малюнка;
         break;
+
+      default:
+        console.log('default');
     }
   };
 

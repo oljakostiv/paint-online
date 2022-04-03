@@ -1,12 +1,12 @@
 import React from 'react';
-import '../styles/bar.scss';
-import toolState from "../store/toolState";
-import canvasState from "../store/canvasState";
 import Brush from "../tools/brush";
-import Rect from "../tools/rect";
+import canvasState from "../store/canvasState";
 import Circle from "../tools/circle";
-import Line from "../tools/line";
 import Eraser from "../tools/eraser";
+import Rect from "../tools/rect";
+import Line from "../tools/line";
+import toolState from "../store/toolState";
+import '../styles/bar.scss';
 
 const ToolBar = () => {
    const onChangeColor = e => {
@@ -16,6 +16,7 @@ const ToolBar = () => {
 
    const savePicture = () => {
      const data = canvasState.canvas.toDataURL();  //отримуєм поточе;
+     console.log(data, 'data');
      const a = document.createElement('a'); //створ силку;
      a.href = data;
      a.download = canvasState.sessionId + '.jpg';   //creat name;
@@ -33,7 +34,7 @@ const ToolBar = () => {
       />
       <button
         className='bar__btn circle'
-        onClick={() => toolState.setTool(new Circle(canvasState.canvas))}
+        onClick={() => toolState.setTool(new Circle(canvasState.canvas, canvasState.sessionId, canvasState.socket))}
       />
       <button
         className='bar__btn rect'

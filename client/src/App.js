@@ -1,7 +1,7 @@
 import React from "react";
-import './styles/app.scss';
 import {BrowserRouter} from "react-router-dom";
 import AppRouter from "./routes";
+import './styles/app.scss';
 
 function App() {
   return (

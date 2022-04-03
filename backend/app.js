@@ -1,17 +1,17 @@
 const express = require('express');
-const cors = require('cors');
 const app = express();
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const wsServer = require('express-ws')(app);
 const aWss = wsServer.getWss(); //для широкої розсилки;
-const path = require('path');
-const fs = require('fs');
 
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-app.ws('/', (ws, req) => {
+app.ws('/', (ws) => {
   // ws.send('text to client');
   ws.on('message', (mess) => {
     mess = JSON.parse(mess);
@@ -47,7 +47,6 @@ app.get('/image', (req, res) => {
     const file = fs.readFileSync(path.resolve(__dirname, `pictures`, `${req.query.id}.jpg`));
     //навпаки, тепер створюєм робочу силку для читання на клієнті:
     const data = `data:image/png;base64,` + file.toString('base64');  //+форматуєм file;
-
     res.json(data);
   } catch (e) {
     return res.status(500).json(e.message);
